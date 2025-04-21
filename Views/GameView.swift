@@ -1,0 +1,136 @@
+import SwiftUI
+
+// Main game view
+struct GameView: View {
+    @State private var bubbles: [Bubble] = []
+    @State private var screenBounds: CGRect = .zero
+    @State private var timeRemaining: Int = 60
+    @State private var isGameActive: Bool = true
+    
+    // Timer to add new bubbles
+    let bubbleTimer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
+    // Game countdown timer
+    let gameTimer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
+    
+    var body: some View {
+        VStack(spacing: 0) {
+            // Fixed Timer Bar at top
+            ZStack {
+                // Timer background
+                Rectangle()
+                    .fill(Color.white)
+                    .shadow(radius: 2)
+                
+                // Timer display
+                Text("Time: \(timeRemaining)")
+                    .font(.title)
+                    .fontWeight(.bold)
+                    .padding()
+            }
+            .frame(height: 60)
+            .zIndex(1) // Ensure timer is always on top
+            
+            // Game Area
+            ZStack {
+                // Background
+                Color(red: 0.9, green: 0.9, blue: 0.95)
+                    .edgesIgnoringSafeArea(.all)
+                
+                // Game over message
+                if !isGameActive {
+                    Text("Game Over!")
+                        .font(.largeTitle)
+                        .fontWeight(.bold)
+                        .foregroundColor(.red)
+                        .zIndex(2) // Ensure it's visible above bubbles
+                }
+                
+                // Bubbles
+                if isGameActive {
+                    ForEach(bubbles) { bubble in
+                        Circle()
+                            .fill(bubble.bubbleColor.color)
+                            .frame(width: bubble.size, height: bubble.size)
+                            .position(bubble.position)
+                            .shadow(color: .gray.opacity(0.3), radius: 2, x: 1, y: 1)
+                            .onTapGesture {
+                                // Remove the tapped bubble
+                                if let index = bubbles.firstIndex(where: { $0.id == bubble.id }) {
+                                    bubbles.remove(at: index)
+                                }
+                            }
+                    }
+                }
+            }
+        }
+        .background(
+            GeometryReader { geometry in
+                Color.clear
+                    .onAppear {
+                        self.screenBounds = geometry.frame(in: .global)
+                        // Initialize with some bubbles
+                        self.generateInitialBubbles()
+                    }
+            }
+        )
+        .onReceive(bubbleTimer) { _ in
+            if isGameActive {
+                self.refreshBubbles()
+            }
+        }
+        .onReceive(gameTimer) { _ in
+            if isGameActive {
+                if timeRemaining > 0 {
+                    timeRemaining -= 1
+                } else {
+                    // End the game
+                    isGameActive = false
+                }
+            }
+        }
+    }
+    
+    // Generate initial set of bubbles
+    private func generateInitialBubbles() {
+        // Start with 10 bubbles
+        for _ in 0..<10 {
+            self.addRandomBubble()
+        }
+    }
+    
+    // Add a random bubble that doesn't overlap with existing ones
+    private func addRandomBubble() {
+        guard !screenBounds.isEmpty else { return }
+        
+        // Try up to 10 times to find a position without overlap
+        for _ in 0..<10 {
+            let newBubble = Bubble.random(in: screenBounds)
+            
+            // Check for overlap
+            if !bubbles.contains(where: { existingBubble in
+                let distance = sqrt(
+                    pow(existingBubble.position.x - newBubble.position.x, 2) +
+                    pow(existingBubble.position.y - newBubble.position.y, 2)
+                )
+                return distance < (existingBubble.size/2 + newBubble.size/2)
+            }) {
+                // No overlap found, add the bubble
+                bubbles.append(newBubble)
+                return
+            }
+        }
+    }
+    
+    // Refresh bubbles (remove some, add some new ones)
+    private func refreshBubbles() {
+        // Remove 30-70% of existing bubbles
+        let removalCount = Int.random(in: 3...7) * bubbles.count / 10
+        bubbles.removeFirst(min(removalCount, bubbles.count))
+        
+        // Add new bubbles
+        let newBubbleCount = Int.random(in: 3...5)
+        for _ in 0..<newBubbleCount {
+            addRandomBubble()
+        }
+    }
+}
