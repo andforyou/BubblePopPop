@@ -31,7 +31,7 @@ struct GameView: View {
                 HStack {
                     // Player name display (left)
                     Text(gameSettings.playerName)
-                        .font(.title)
+                        .font(.title3)
                         .fontWeight(.bold)
                         .lineLimit(1)
                     
@@ -39,14 +39,14 @@ struct GameView: View {
                     
                     // Timer display (middle)
                     Text("Time: \(timeRemaining)")
-                        .font(.title)
+                        .font(.title3)
                         .fontWeight(.bold)
                     
                     Spacer()
                     
                     // Score display (right)
                     Text("Score: \(scoreManager.currentScore)")
-                        .font(.title)
+                        .font(.title3)
                         .fontWeight(.bold)
                     
                     Spacer()
@@ -56,7 +56,7 @@ struct GameView: View {
                         showSettings = true
                     }) {
                         Image(systemName: "gear")
-                            .font(.title2)
+                            .font(.title3)
                     }
                     .padding(.trailing)
                 }

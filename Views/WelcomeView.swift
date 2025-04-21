@@ -12,6 +12,9 @@ struct WelcomeView: View {
     @State private var tempPlayerName: String = ""
     var onNameSubmitted: () -> Void
     
+    // Maximum character limit for username
+    private let maxNameLength = 20
+    
     var body: some View {
         VStack(spacing: 30) {
             Text("Welcome to BubblePopPop")
@@ -22,12 +25,24 @@ struct WelcomeView: View {
             Spacer()
             
             VStack(alignment: .leading, spacing: 10) {
-                Text("Input your name please:")
+                Text("Enter your name:")
                     .font(.headline)
                 
                 TextField("Your Name", text: $tempPlayerName)
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                    .textFieldStyle(RoundedTextFieldStyle())
                     .autocorrectionDisabled()
+                    .padding(.horizontal)
+                    .onChange(of: tempPlayerName) { oldValue, newValue in
+                        // Limit to 20 characters
+                        if newValue.count > maxNameLength {
+                            tempPlayerName = String(newValue.prefix(maxNameLength))
+                        }
+                    }
+                
+                Text("\(tempPlayerName.count)/\(maxNameLength)")
+                    .font(.caption)
+                    .foregroundColor(tempPlayerName.count >= maxNameLength ? .red : .gray)
+                    .frame(maxWidth: .infinity, alignment: .trailing)
                     .padding(.horizontal)
             }
             .padding()
@@ -35,8 +50,9 @@ struct WelcomeView: View {
             Spacer()
             
             Button(action: {
-                if !tempPlayerName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-                    gameSettings.playerName = tempPlayerName
+                let trimmedName = tempPlayerName.trimmingCharacters(in: .whitespacesAndNewlines)
+                if !trimmedName.isEmpty {
+                    gameSettings.playerName = trimmedName
                     onNameSubmitted()
                 }
             }) {
@@ -54,5 +70,24 @@ struct WelcomeView: View {
         .padding()
         .background(Color(red: 0.9, green: 0.9, blue: 0.95))
         .edgesIgnoringSafeArea(.all)
+        .onAppear {
+            // Pre-fill with previous name if available
+            if !gameSettings.playerName.isEmpty {
+                tempPlayerName = gameSettings.playerName
+            }
+        }
+    }
+}
+
+// Custom text field style with a border
+struct RoundedTextFieldStyle: TextFieldStyle {
+    func _body(configuration: TextField<Self._Label>) -> some View {
+        configuration
+            .padding(10)
+            .background(
+                RoundedRectangle(cornerRadius: 8)
+                    .stroke(Color.gray.opacity(0.5), lineWidth: 1)
+                    .background(Color.white.cornerRadius(8))
+            )
     }
 }

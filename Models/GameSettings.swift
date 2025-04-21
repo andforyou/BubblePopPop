@@ -25,17 +25,14 @@ class GameSettings: ObservableObject {
     }
     
     init() {
-        // Always initialize with default values
-        self.timerDuration = 60
-        self.maxBubbles = 15
-        self.playerName = ""
-        
-        // Only load player name from UserDefaults
-        // We intentionally don't load timerDuration or maxBubbles to always start with defaults
-        if let savedPlayerName = UserDefaults.standard.string(forKey: "playerName") {
-            self.playerName = savedPlayerName
+            // Always initialize with default values
+            self.timerDuration = 60  // Default to 60 seconds
+            self.maxBubbles = 15     // Default to 15 bubbles
+            self.playerName = ""
+            
+            // We don't preload any settings from UserDefaults
+            // to ensure we always start with the default values
         }
-    }
     
     // Reset settings to defaults
     func resetToDefaults() {

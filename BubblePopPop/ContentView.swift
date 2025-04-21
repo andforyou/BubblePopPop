@@ -13,11 +13,11 @@ struct ContentView: View {
     
     var body: some View {
         Group {
-            if showGameView || !gameSettings.playerName.isEmpty {
-                // Show game view if user has already entered name or just entered it
+            if showGameView {
+                // Show game view once user has entered name
                 GameView(gameSettings: gameSettings)
             } else {
-                // Show welcome view for new users
+                // Always show welcome view first
                 WelcomeView(gameSettings: gameSettings) {
                     showGameView = true
                 }
