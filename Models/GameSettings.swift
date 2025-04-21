@@ -31,14 +31,9 @@ class GameSettings: ObservableObject {
         self.playerName = ""
         
         // Only load player name from UserDefaults
-        // We intentionally don't load timerDuration to always start with 60s
+        // We intentionally don't load timerDuration or maxBubbles to always start with defaults
         if let savedPlayerName = UserDefaults.standard.string(forKey: "playerName") {
             self.playerName = savedPlayerName
-        }
-        
-        // We still load maxBubbles as it doesn't affect the timer
-        if let savedMaxBubbles = UserDefaults.standard.object(forKey: "maxBubbles") as? Int {
-            self.maxBubbles = savedMaxBubbles
         }
     }
     

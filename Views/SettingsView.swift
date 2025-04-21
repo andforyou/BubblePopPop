@@ -4,6 +4,7 @@ struct SettingsView: View {
     @Environment(\.dismiss) var dismiss
     @ObservedObject var gameSettings: GameSettings
     @State private var timerInput: String = ""
+    @State private var maxBubblesInput: String = ""
     
     var body: some View {
         VStack(spacing: 0) {
@@ -57,6 +58,22 @@ struct SettingsView: View {
                         .foregroundColor(.gray)
                 }
                 
+                Section(header: Text("Maximum Bubbles")) {
+                    HStack {
+                        Text("Max Bubbles")
+                        Spacer()
+                        TextField("15", text: $maxBubblesInput)
+                            .keyboardType(.numberPad)
+                            .multilineTextAlignment(.trailing)
+                            .frame(width: 80)
+                    }
+                    
+                    // Note about valid values
+                    Text("Please enter a value between 5 and 30 bubbles")
+                        .font(.caption)
+                        .foregroundColor(.gray)
+                }
+                
                 Section {
                     Button("Save Settings") {
                         saveSettings()
@@ -71,6 +88,7 @@ struct SettingsView: View {
         .navigationBarHidden(true)
         .onAppear {
             timerInput = "\(gameSettings.timerDuration)"
+            maxBubblesInput = "\(gameSettings.maxBubbles)"
         }
     }
     
@@ -81,6 +99,13 @@ struct SettingsView: View {
         } else {
             // Reset to default if invalid
             timerInput = "\(gameSettings.timerDuration)"
+        }
+        
+        if let newMaxBubbles = Int(maxBubblesInput), newMaxBubbles >= 5 && newMaxBubbles <= 30 {
+            gameSettings.maxBubbles = newMaxBubbles
+        } else {
+            // Reset to default if invalid
+            maxBubblesInput = "\(gameSettings.maxBubbles)"
         }
     }
 }

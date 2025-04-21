@@ -162,10 +162,13 @@ struct GameView: View {
         let removalCount = Int.random(in: 3...7) * bubbles.count / 10
         bubbles.removeFirst(min(removalCount, bubbles.count))
         
-        // Add new bubbles
-        let newBubbleCount = Int.random(in: 3...5)
-        for _ in 0..<newBubbleCount {
-            addRandomBubble()
+        // Add new bubbles (respecting the max bubbles setting)
+        let maxBubblesToAdd = gameSettings.maxBubbles - bubbles.count
+        if maxBubblesToAdd > 0 {
+            let newBubbleCount = min(Int.random(in: 3...5), maxBubblesToAdd)
+            for _ in 0..<newBubbleCount {
+                addRandomBubble()
+            }
         }
     }
     
