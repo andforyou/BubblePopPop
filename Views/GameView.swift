@@ -2,10 +2,12 @@ import SwiftUI
 
 // Main game view
 struct GameView: View {
+    @StateObject private var gameSettings = GameSettings()
     @State private var bubbles: [Bubble] = []
     @State private var screenBounds: CGRect = .zero
     @State private var timeRemaining: Int = 60
     @State private var isGameActive: Bool = true
+    @State private var showSettings: Bool = false
     
     // Timer to add new bubbles
     let bubbleTimer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
@@ -21,11 +23,24 @@ struct GameView: View {
                     .fill(Color.white)
                     .shadow(radius: 2)
                 
-                // Timer display
-                Text("Time: \(timeRemaining)")
-                    .font(.title)
-                    .fontWeight(.bold)
-                    .padding()
+                HStack {
+                    // Timer display
+                    Text("Time: \(timeRemaining)")
+                        .font(.title)
+                        .fontWeight(.bold)
+                    
+                    Spacer()
+                    
+                    // Settings button
+                    Button(action: {
+                        showSettings = true
+                    }) {
+                        Image(systemName: "gear")
+                            .font(.title2)
+                    }
+                    .padding(.trailing)
+                }
+                .padding(.horizontal)
             }
             .frame(height: 60)
             .zIndex(1) // Ensure timer is always on top
@@ -70,6 +85,8 @@ struct GameView: View {
                         self.screenBounds = geometry.frame(in: .global)
                         // Initialize with some bubbles
                         self.generateInitialBubbles()
+                        // Set initial time from settings
+                        self.timeRemaining = gameSettings.timerDuration
                     }
             }
         )
@@ -86,6 +103,16 @@ struct GameView: View {
                     // End the game
                     isGameActive = false
                 }
+            }
+        }
+        .sheet(isPresented: $showSettings) {
+            SettingsView(gameSettings: gameSettings)
+        }
+        .onChange(of: showSettings) { oldValue, newValue in
+            if newValue == false {
+                // Settings sheet was dismissed, update the timer
+                timeRemaining = gameSettings.timerDuration
+                isGameActive = true
             }
         }
     }
@@ -132,5 +159,13 @@ struct GameView: View {
         for _ in 0..<newBubbleCount {
             addRandomBubble()
         }
+    }
+    
+    // Reset game
+    func resetGame() {
+        timeRemaining = gameSettings.timerDuration
+        bubbles = []
+        generateInitialBubbles()
+        isGameActive = true
     }
 }

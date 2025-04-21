@@ -9,6 +9,8 @@ import SwiftUI
 
 @main
 struct BubblePopApp: App {
+    @StateObject private var gameSettings = GameSettings()
+    
     var body: some Scene {
         WindowGroup {
             GameView()

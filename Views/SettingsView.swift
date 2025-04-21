@@ -1,14 +1,7 @@
-//
-//  SettingsView.swift
-//  BubblePopPop
-//
-//  Created by 牙后慧 on 2025/4/21.
-//
-
 import SwiftUI
 
 struct SettingsView: View {
-    @Environment(\.presentationMode) var presentationMode
+    @Environment(\.dismiss) var dismiss
     @ObservedObject var gameSettings: GameSettings
     @State private var timerInput: String = ""
     
@@ -22,7 +15,7 @@ struct SettingsView: View {
                 
                 HStack {
                     Button(action: {
-                        presentationMode.wrappedValue.dismiss()
+                        dismiss()
                     }) {
                         HStack {
                             Image(systemName: "chevron.left")
@@ -49,24 +42,45 @@ struct SettingsView: View {
             // Settings content
             Form {
                 Section(header: Text("Game Timer")) {
-                    TextField("Timer duration (seconds)", text: $timerInput)
-                        .keyboardType(.numberPad)
-                        .onAppear {
-                            timerInput = "\(gameSettings.timerDuration)"
-                        }
+                    HStack {
+                        Text("Game Duration (seconds)")
+                        Spacer()
+                        TextField("60", text: $timerInput)
+                            .keyboardType(.numberPad)
+                            .multilineTextAlignment(.trailing)
+                            .frame(width: 80)
+                    }
+                    
+                    // Note about valid values
+                    Text("Please enter a value between 10 and 120 seconds")
+                        .font(.caption)
+                        .foregroundColor(.gray)
                 }
                 
-                Button("Save") {
-                    if let newDuration = Int(timerInput), newDuration > 0 {
-                        gameSettings.timerDuration = newDuration
-                    } else {
-                        // Reset to default if invalid
-                        timerInput = "\(gameSettings.timerDuration)"
+                Section {
+                    Button("Save Settings") {
+                        saveSettings()
+                        dismiss()
                     }
-                    presentationMode.wrappedValue.dismiss()
+                    .frame(maxWidth: .infinity)
+                    .foregroundColor(.blue)
                 }
             }
+            .padding(.top)
         }
         .navigationBarHidden(true)
+        .onAppear {
+            timerInput = "\(gameSettings.timerDuration)"
+        }
+    }
+    
+    // Save settings with validation
+    private func saveSettings() {
+        if let newDuration = Int(timerInput), newDuration >= 10 && newDuration <= 120 {
+            gameSettings.timerDuration = newDuration
+        } else {
+            // Reset to default if invalid
+            timerInput = "\(gameSettings.timerDuration)"
+        }
     }
 }
