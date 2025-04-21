@@ -2,7 +2,7 @@ import SwiftUI
 
 // Main game view
 struct GameView: View {
-    @StateObject private var gameSettings = GameSettings()
+    @ObservedObject var gameSettings: GameSettings
     @State private var bubbles: [Bubble] = []
     @State private var screenBounds: CGRect = .zero
     @State private var timeRemaining: Int = 60
@@ -24,14 +24,22 @@ struct GameView: View {
                     .shadow(radius: 2)
                 
                 HStack {
-                    // Timer display
+                    // Player name display (left)
+                    Text(gameSettings.playerName)
+                        .font(.title)
+                        .fontWeight(.bold)
+                        .lineLimit(1)
+                    
+                    Spacer()
+                    
+                    // Timer display (middle)
                     Text("Time: \(timeRemaining)")
                         .font(.title)
                         .fontWeight(.bold)
                     
                     Spacer()
                     
-                    // Settings button
+                    // Settings button (right)
                     Button(action: {
                         showSettings = true
                     }) {

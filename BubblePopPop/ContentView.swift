@@ -8,17 +8,20 @@
 import SwiftUI
 
 struct ContentView: View {
+    @StateObject private var gameSettings = GameSettings()
+    @State private var showGameView = false
+    
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+        Group {
+            if showGameView || !gameSettings.playerName.isEmpty {
+                // Show game view if user has already entered name or just entered it
+                GameView(gameSettings: gameSettings)
+            } else {
+                // Show welcome view for new users
+                WelcomeView(gameSettings: gameSettings) {
+                    showGameView = true
+                }
+            }
         }
-        .padding()
     }
-}
-
-#Preview {
-    ContentView()
 }
