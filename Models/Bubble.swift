@@ -22,6 +22,17 @@ enum BubbleColor: CaseIterable {
         }
     }
     
+    // Get the point value for this bubble color
+    var points: Int {
+        switch self {
+        case .red: return 1
+        case .pink: return 2
+        case .green: return 5
+        case .blue: return 8
+        case .black: return 10
+        }
+    }
+    
     // Random color based on probability
     static func random() -> BubbleColor {
         let randomValue = Double.random(in: 0...1)
