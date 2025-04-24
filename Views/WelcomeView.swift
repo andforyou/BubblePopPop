@@ -17,12 +17,14 @@ struct WelcomeView: View {
     
     var body: some View {
         VStack(spacing: 30) {
+            Spacer()
+            
             Text("Welcome to BubblePopPop")
                 .font(.largeTitle)
                 .fontWeight(.bold)
                 .multilineTextAlignment(.center)
             
-            Spacer()
+//            Spacer()
             
             VStack(alignment: .leading, spacing: 10) {
                 Text("Enter your name:")
@@ -75,7 +77,9 @@ struct WelcomeView: View {
             if !gameSettings.playerName.isEmpty {
                 tempPlayerName = gameSettings.playerName
             }
+            
         }
+       
     }
 }
 

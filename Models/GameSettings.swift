@@ -1,3 +1,10 @@
+//
+//  GameSettings.swift
+//  BubblePopPop
+//
+//  Created by 牙后慧 on 2025/4/21.
+//
+
 import SwiftUI
 import Combine
 
@@ -10,7 +17,6 @@ class GameSettings: ObservableObject {
     }
     
     // Maximum number of bubbles (default: 15)
-    // We'll implement this later but including it for future expansion
     @Published var maxBubbles: Int {
         didSet {
             UserDefaults.standard.set(maxBubbles, forKey: "maxBubbles")
@@ -29,15 +35,11 @@ class GameSettings: ObservableObject {
             self.timerDuration = 60  // Default to 60 seconds
             self.maxBubbles = 15     // Default to 15 bubbles
             self.playerName = ""
-            
-            // We don't preload any settings from UserDefaults
-            // to ensure we always start with the default values
         }
     
     // Reset settings to defaults
     func resetToDefaults() {
         timerDuration = 60
         maxBubbles = 15
-        // Note: We don't reset player name as part of defaults
     }
 }
